@@ -37,22 +37,23 @@ function Game() {
   }, []);
 
   // realtime - listen to the channel ------------------------------------------
-  const receivingChannel = supabase
-    .channel("test")
-    .on(
-      "postgres_changes",
-      {
-        event: "*",
-        schema: "public",
-        table: "game_data",
-      },
-      (payload) => {
-        console.log(payload.new);
-        setGameData(payload.new);
-      }
-    )
-    .subscribe();
-
+  useEffect(() => {
+    const receivingChannel = supabase
+      .channel("test")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "game_data",
+        },
+        (payload) => {
+          console.log(payload.new);
+          setGameData(payload.new);
+        }
+      )
+      .subscribe();
+  }, [gameData, currGamewinner]);
   //------------------------------------------------------------------------------------------
   const boxClick = (idx) => {
     if (currGamewinner === null && gameData[`val${idx}`] === null) {
