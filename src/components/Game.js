@@ -11,50 +11,31 @@ function Game() {
 
   const location = useLocation();
   let locationArr = location.pathname.split("/");
+  const gameID = locationArr[locationArr.length - 1];
 
+  const [gameData, setGameData] = useState({});
   const [currPlayer, setCurrPlayer] = useState("O");
   const [currGamewinner, setCurrGameWinner] = useState(null);
 
-  const gameID = locationArr[locationArr.length - 1];
-  const [gameData, setGameData] = useState({});
-
-  const fetchGameData = async () => {
-    const { data, error } = await supabase
-      .from("game_data")
-      .select()
-      .eq("gameid", gameID);
-
-    if (error) {
-      console.log(error);
-    }
-    if (data) {
-      setGameData(data[0]);
-    }
-  };
-
+  //fetch data from supabase table ---------------------------------------------
   useEffect(() => {
+    const fetchGameData = async () => {
+      const { data, error } = await supabase
+        .from("game_data")
+        .select()
+        .eq("gameid", gameID);
+
+      if (error) {
+        console.log(error);
+      }
+      if (data) {
+        setGameData(data[0]);
+      }
+    };
     fetchGameData();
   }, []);
 
-  // realtime - listen to the channel ------------------------------------------
-  useEffect(() => {
-    const receivingChannel = supabase
-      .channel("test")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "game_data",
-        },
-        (payload) => {
-          console.log(payload.new);
-          setGameData(payload.new);
-        }
-      )
-      .subscribe();
-  }, [gameData, currGamewinner]);
-  //------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------
   const boxClick = (idx) => {
     if (currGamewinner === null && gameData[`val${idx}`] === null) {
       switch (idx) {
@@ -95,7 +76,7 @@ function Game() {
     currPlayer === "O" ? setCurrPlayer("X") : setCurrPlayer("O");
   };
 
-  // victory cases -------------------------------------------------
+  // victory cases -------------------------------------------------------------
   function victory() {
     const possibleCases = [
       [0, 1, 2],
@@ -122,19 +103,7 @@ function Game() {
     }
   }
 
-  useEffect(() => {
-    if (currGamewinner) {
-      updateGameData();
-    }
-  }, [currGamewinner]);
-
-  useEffect(() => {
-    if (gameData.id) {
-      updateGameData();
-    }
-    victory();
-  }, [gameData, currGamewinner]);
-
+  // update data in supabase table ---------------------------------------------
   async function updateGameData() {
     const { data, error } = await supabase
       .from("game_data")
@@ -149,10 +118,50 @@ function Game() {
         val7: gameData.val7,
         val8: gameData.val8,
         winner: currGamewinner,
+        current_player: currPlayer,
       })
       .eq("id", gameData.id)
       .select();
+
+    if (error) {
+      console.log(error);
+    }
+    if (data) {
+      // console.log(data);
+    }
   }
+
+  useEffect(() => {
+    if (gameData.id) {
+      updateGameData();
+    }
+    victory();
+  }, [gameData, currGamewinner]);
+
+  // realtime - listen to the changes ------------------------------------------
+  useEffect(() => {
+    const receivingChannel = supabase
+      .channel("test")
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "game_data",
+        },
+        (payload) => {
+          console.log(payload.new);
+          setGameData(payload.new);
+          setCurrPlayer(payload.new.current_player);
+          setCurrGameWinner(payload.new.winner);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      receivingChannel.unsubscribe();
+    };
+  }, [gameData, updateGameData, currGamewinner]);
 
   const handleReset = () => {
     setCurrGameWinner(null);
@@ -168,7 +177,8 @@ function Game() {
       val6: null,
       val7: null,
       val8: null,
-      winner: null,
+      winner: currGamewinner,
+      current_player: "O",
     });
   };
   const userSignOut = () => {

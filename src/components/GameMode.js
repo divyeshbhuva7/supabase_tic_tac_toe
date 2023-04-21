@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { redirect, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import tictactoelogo from "../tictactoelogo.png";
 import { Image, Paper, Text } from "@mantine/core";
@@ -47,25 +47,11 @@ function GameMode() {
           val8: null,
           winner: null,
           gameid: gameID,
+          current_player: "O",
         });
 
         if (data) {
           console.log(data);
-
-          // realtime - broadcast ------------------------------------------------------
-          const sendingChannel = supabase.channel("test", {
-            config: {
-              broadcast: {
-                self: true,
-              },
-            },
-          });
-
-          sendingChannel
-            .on("broadcast", { event: "update" }, (payload) =>
-              console.log(payload)
-            )
-            .subscribe();
         }
         if (error) {
           console.log(error);

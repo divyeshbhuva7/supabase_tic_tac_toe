@@ -58,7 +58,11 @@ export default function SignIn() {
       });
 
       if (error) {
-        console.log(error);
+        console.log(error.message);
+        if (error.message === "Invalid login credentials") {
+          setShowErr(true);
+          setErr("Invalid email or password");
+        }
       }
       if (data) {
         // console.log(data);
@@ -69,16 +73,7 @@ export default function SignIn() {
         }
       }
     } catch (err) {
-      console.log(err);
-      // if (
-      //   error.message ===
-      //   "Invalid credentials. Please check the email and password."
-      // ) {
-      //   setShowErr(true);
-      //   setErr(error.message);
-      // } else {
-      //   setErr("");
-      // }
+      console.log(err.message);
     }
   };
 
