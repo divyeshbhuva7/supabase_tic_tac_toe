@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { redirect, useLocation, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import tictactoelogo from "../tictactoelogo.png";
 import { Image, Paper, Text } from "@mantine/core";
 import supabase from "../supabaseConfig";
 
-function GameMode() {
+function JoinGame() {
   const navigate = useNavigate();
   const location = useLocation();
   let locationArr = location.pathname.split("/");
@@ -21,7 +21,7 @@ function GameMode() {
 
   useEffect(() => {
     if (gameID) {
-      setGameLink(window.location.href.replace(`mode`, `/${gameID}`));
+      setGameLink(window.location.href.replace(`joingame`, `game/${gameID}`));
     }
   }, [gameID, location.pathname]);
 
@@ -34,17 +34,17 @@ function GameMode() {
 
   const StartGame = () => {
     async function createGameData() {
-      if (gameID !== "") {
+      if (gameID !== "" && gameID !== undefined) {
         const { data, error } = await supabase.from("game_data").insert({
-          val0: null,
-          val1: null,
-          val2: null,
-          val3: null,
-          val4: null,
-          val5: null,
-          val6: null,
-          val7: null,
-          val8: null,
+          val0: "",
+          val1: "",
+          val2: "",
+          val3: "",
+          val4: "",
+          val5: "",
+          val6: "",
+          val7: "",
+          val8: "",
           winner: null,
           gameid: gameID,
           current_player: "O",
@@ -57,7 +57,7 @@ function GameMode() {
           console.log(error);
         }
 
-        navigate(`/${userID}/game/${gameID}`);
+        navigate(`/game/${gameID}`);
       } else {
         return;
       }
@@ -88,4 +88,4 @@ function GameMode() {
   );
 }
 
-export default GameMode;
+export default JoinGame;
