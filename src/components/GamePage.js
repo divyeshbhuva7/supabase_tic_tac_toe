@@ -58,7 +58,6 @@ export default function GamePage({ userName }) {
   //----------------------------------------------------------------------------
   const boxClick = (idx) => {
     if (turn === playerInput && gameData[`val${idx}`] === "") {
-      // setTurn(playerInput === "O" ? "X" : "O");
       setCurrPlayer(playerInput === "O" ? "X" : "O");
     }
 
