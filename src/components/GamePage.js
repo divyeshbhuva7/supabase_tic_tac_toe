@@ -15,14 +15,17 @@ export default function GamePage({ userName }) {
   let locationArr = location.pathname.split("/");
   const gameID = locationArr[locationArr.length - 1];
 
-  const [board, setBoard] = useState(["", "", "", "", "", "", "", "", ""]);
+  const board = ["", "", "", "", "", "", "", "", ""];
 
   const [turn, setTurn] = useState("O");
   const [currPlayer, setCurrPlayer] = useState("O");
 
+  const [playerInput, setPlayerInput] = useState("");
+  const [player1, setPlayer1] = useState("");
+
   const [gameData, setGameData] = useState({});
   const [winner, setWinner] = useState(null);
-  const [disabledAfterWin, setDisabledAfterWin] = useState(false);
+  const [disabledClicks, setDisabledClicks] = useState(false);
 
   //fetch data from supabase table ---------------------------------------------
   useEffect(() => {
@@ -37,60 +40,72 @@ export default function GamePage({ userName }) {
       }
       if (data) {
         setGameData(data[0]);
-        // setTurn(data[0].current_player);
-        // setCurrPlayer(data[0].current_player);
+        setPlayer1(data[0].player1);
+        setCurrPlayer(data[0].current_player);
       }
     };
     fetchGameData();
   }, []);
 
+  useEffect(() => {
+    if (player1 !== "" && player1 === userName) {
+      setPlayerInput("O");
+    } else {
+      setPlayerInput("X");
+    }
+  }, [player1]);
+
   //----------------------------------------------------------------------------
   const boxClick = (idx) => {
-    if (winner === null && gameData[`val${idx}`] === "") {
+    if (turn === playerInput && gameData[`val${idx}`] === "") {
+      // setTurn(playerInput === "O" ? "X" : "O");
+      setCurrPlayer(playerInput === "O" ? "X" : "O");
+    }
+
+    if (
+      turn === playerInput &&
+      winner === null &&
+      gameData[`val${idx}`] === ""
+    ) {
       switch (idx) {
         case 0:
-          setGameData({ ...gameData, val0: currPlayer });
+          setGameData({ ...gameData, val0: playerInput });
           break;
         case 1:
-          setGameData({ ...gameData, val1: currPlayer });
+          setGameData({ ...gameData, val1: playerInput });
           break;
         case 2:
-          setGameData({ ...gameData, val2: currPlayer });
+          setGameData({ ...gameData, val2: playerInput });
           break;
         case 3:
-          setGameData({ ...gameData, val3: currPlayer });
+          setGameData({ ...gameData, val3: playerInput });
           break;
         case 4:
-          setGameData({ ...gameData, val4: currPlayer });
+          setGameData({ ...gameData, val4: playerInput });
           break;
         case 5:
-          setGameData({ ...gameData, val5: currPlayer });
+          setGameData({ ...gameData, val5: playerInput });
           break;
         case 6:
-          setGameData({ ...gameData, val6: currPlayer });
+          setGameData({ ...gameData, val6: playerInput });
           break;
         case 7:
-          setGameData({ ...gameData, val7: currPlayer });
+          setGameData({ ...gameData, val7: playerInput });
           break;
         case 8:
-          setGameData({ ...gameData, val8: currPlayer });
+          setGameData({ ...gameData, val8: playerInput });
           break;
         default:
           break;
       }
     }
-
-    if (turn === currPlayer && gameData[`val${idx}`] === "") {
-      setTurn(currPlayer === "O" ? "X" : "O");
-    }
-    currPlayer === "O" ? setCurrPlayer("X") : setCurrPlayer("O");
   };
 
   useEffect(() => {
     if (winner === null) {
       updateGameData();
     }
-  }, [currPlayer, winner]);
+  }, [currPlayer]);
 
   // update in database ----------------------------------------------------------
   async function updateGameData() {
@@ -107,11 +122,14 @@ export default function GamePage({ userName }) {
         val6: gameData.val6,
         val7: gameData.val7,
         val8: gameData.val8,
-        winner: winner,
         current_player: currPlayer,
       })
       .eq("gameid", gameID)
       .select();
+
+    if (error) {
+      console.log(error);
+    }
   }
 
   // winning case ----------------------------------------------------------------
@@ -132,13 +150,22 @@ export default function GamePage({ userName }) {
       }
     };
     checkWin();
+    setCurrPlayer(gameData.current_player);
   }, [gameData]);
 
   useEffect(() => {
-    if (winner === "X" || winner === "O") {
-      setDisabledAfterWin(true);
+    if (playerInput === turn) {
+      setDisabledClicks(false);
+    } else {
+      setDisabledClicks(true);
     }
-  }, [winner]);
+
+    if (winner === "X" || winner === "O") {
+      setDisabledClicks(true);
+    }
+
+    setCurrPlayer(gameData.current_player);
+  }, [turn, winner]);
 
   // realtime events -------------------------------------------------------------
 
@@ -155,37 +182,19 @@ export default function GamePage({ userName }) {
         },
         (payload) => {
           console.log("received changes...!", payload);
-          setTurn(payload.new.current_player);
           setGameData(payload.new);
+          setTurn(payload.new.current_player);
         }
       )
       .subscribe();
 
     return () => supabase.removeChannel(receivingChannel);
-  }, [supabase]);
+  }, []);
 
   // reset game ----------------------------------------------------------------
 
   const handleReset = async () => {
-    setWinner(null);
-    setTurn("O");
-    setCurrPlayer("O");
-    setDisabledAfterWin(false);
-    setGameData({
-      ...gameData,
-      val0: "",
-      val1: "",
-      val2: "",
-      val3: "",
-      val4: "",
-      val5: "",
-      val6: "",
-      val7: "",
-      val8: "",
-      winner: winner,
-      current_player: "O",
-    });
-    const { data, error } = supabase
+    const { data, error } = await supabase
       .from("game_data")
       .update({
         ...gameData,
@@ -203,13 +212,45 @@ export default function GamePage({ userName }) {
       })
       .eq("gameid", gameID)
       .select();
+
+    setTurn("O");
+    setCurrPlayer("O");
+    setDisabledClicks(false);
+    setGameData({
+      ...gameData,
+      val0: "",
+      val1: "",
+      val2: "",
+      val3: "",
+      val4: "",
+      val5: "",
+      val6: "",
+      val7: "",
+      val8: "",
+      winner: null,
+      current_player: "O",
+    });
   };
+
+  useEffect(() => {
+    if (
+      gameData.val0 === "" &&
+      gameData.val1 === "" &&
+      gameData.val2 === "" &&
+      gameData.val3 === "" &&
+      gameData.val4 === "" &&
+      gameData.val5 === "" &&
+      gameData.val6 === "" &&
+      gameData.val7 === "" &&
+      gameData.val8 === ""
+    ) {
+      setWinner(null);
+    }
+  }, [handleReset]);
 
   // signout -------------------------------------------------------------------
 
   const userSignOut = async () => {
-    console.log("user signing out....");
-
     const { error } = await supabase.auth.signOut();
 
     if (error) {
@@ -244,7 +285,7 @@ export default function GamePage({ userName }) {
               {board.map((val, idx) => (
                 <Square
                   key={idx}
-                  disabled={disabledAfterWin}
+                  disabled={disabledClicks}
                   val={gameData[`val${idx}`]}
                   chooseSquare={() => boxClick(idx)}
                 />

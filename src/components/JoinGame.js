@@ -1,22 +1,19 @@
 import { useEffect, useState } from "react";
-import { redirect, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import tictactoelogo from "../tictactoelogo.png";
 import { Image, Paper, Text } from "@mantine/core";
 import supabase from "../supabaseConfig";
 
-function JoinGame() {
+function JoinGame({ userName }) {
   const navigate = useNavigate();
   const location = useLocation();
-  let locationArr = location.pathname.split("/");
 
-  const [userID, setUserID] = useState("");
   const [gameID, setGameID] = useState("");
   const [gameLink, setGameLink] = useState("");
 
   useEffect(() => {
     setGameID(uuidv4().slice(0, 8));
-    setUserID(locationArr[1]);
   }, []);
 
   useEffect(() => {
@@ -34,7 +31,7 @@ function JoinGame() {
 
   const StartGame = () => {
     async function createGameData() {
-      if (gameID !== "" && gameID !== undefined) {
+      if (gameID !== "" && gameID !== undefined && userName) {
         const { data, error } = await supabase.from("game_data").insert({
           val0: "",
           val1: "",
@@ -48,6 +45,7 @@ function JoinGame() {
           winner: null,
           gameid: gameID,
           current_player: "O",
+          player1: userName,
         });
 
         if (data) {

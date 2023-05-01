@@ -20,7 +20,6 @@ function App() {
 
   const [tokenExpireTime, setTokenExpireTime] = useState(0);
   const [userName, setUserName] = useState(0);
-  const [checkToken, setCheckToken] = useState(false);
 
   const Time = window.Date.now().toString();
   const currTime = Time.slice(0, 10);
@@ -31,7 +30,6 @@ function App() {
     );
     if (signInCheck !== null) {
       setTokenExpireTime(signInCheck.expires_at);
-      // console.log(signInCheck);
       const usrName = signInCheck.user.email.split("@");
       setUserName(usrName[0]);
     }
@@ -52,7 +50,7 @@ function App() {
         />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/joingame" element={<JoinGame />} />
+        <Route path="/joingame" element={<JoinGame userName={userName} />} />
         <Route
           path="/game/:gameID"
           element={<GamePage userName={userName} />}
