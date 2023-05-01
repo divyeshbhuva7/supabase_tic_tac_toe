@@ -74,7 +74,7 @@ export default function SignUp() {
 
   useEffect(() => {
     if (userId !== "" && userId !== undefined) {
-      navigate(`/${userId}/gamemode`);
+      navigate(`/joingame`);
     } else {
       return;
     }
@@ -87,67 +87,69 @@ export default function SignUp() {
       </div>
 
       <Paper className="signIn-Up-Box glassEffect">
-        <Text className="Headings signIn-heading" mb="sm">
-          Sign Up
-        </Text>
-
         <div>
-          <TextInput
-            label="Email"
-            title="Email"
-            placeholder="your@email.com"
-            className="login-input"
-            styles={() => ({
-              label: {
-                color: theme.colors.gray[2],
-              },
-              input: {
-                "&:focus-within": {
-                  borderColor: theme.colors.yellow[8],
-                },
-                backgroundColor: theme.colors.blue[1],
-              },
-            })}
-            required
-            mb="xs"
-            error={emailErr}
-            onFocus={() => setEmailErr("")}
-            onChange={(e) => {
-              setUser({ ...user, email: e.target.value });
-            }}
-          />
+          <Text className="Headings signIn-heading" mb="sm">
+            Sign Up
+          </Text>
 
-          <PasswordInput
-            className="login-input"
-            withAsterisk
-            label="Password"
-            placeholder="Password"
-            styles={(theme) => ({
-              label: {
-                color: theme.colors.gray[2],
-              },
-              input: {
-                "&:focus-within": {
-                  borderColor: theme.colors.yellow[8],
+          <div>
+            <TextInput
+              label="Email"
+              title="Email"
+              placeholder="your@email.com"
+              className="login-input"
+              styles={() => ({
+                label: {
+                  color: theme.colors.gray[2],
                 },
-                backgroundColor: theme.colors.blue[1],
-              },
-            })}
-            error={passwordErr}
-            onFocus={() => setPasswordErr("")}
-            visible={visible}
-            onVisibilityChange={toggle}
-            onChange={(e) => {
-              setUser({ ...user, password: e.target.value });
-            }}
-          />
+                input: {
+                  "&:focus-within": {
+                    borderColor: theme.colors.yellow[8],
+                  },
+                  backgroundColor: theme.colors.blue[1],
+                },
+              })}
+              required
+              mb="xs"
+              error={emailErr}
+              onFocus={() => setEmailErr("")}
+              onChange={(e) => {
+                setUser({ ...user, email: e.target.value });
+              }}
+            />
+
+            <PasswordInput
+              label="Password"
+              className="login-input"
+              withAsterisk
+              placeholder="Password"
+              styles={(theme) => ({
+                label: {
+                  color: theme.colors.gray[2],
+                },
+                input: {
+                  "&:focus-within": {
+                    borderColor: theme.colors.yellow[8],
+                  },
+                  backgroundColor: theme.colors.blue[1],
+                },
+              })}
+              error={passwordErr}
+              onFocus={() => setPasswordErr("")}
+              visible={visible}
+              onVisibilityChange={toggle}
+              onChange={(e) => {
+                setUser({ ...user, password: e.target.value });
+              }}
+            />
+          </div>
+
+          <Group position="center" mt="xl">
+            <button className="btn signIn-Up-btn" onClick={signupUser}>
+              SIGN UP
+            </button>
+          </Group>
         </div>
-
-        <Group position="center" mt="xl">
-          <button className="btn signIn-Up-btn" onClick={signupUser}>
-            SIGN UP
-          </button>
-        </Group>
       </Paper>
     </div>
   );

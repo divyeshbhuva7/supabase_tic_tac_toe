@@ -41,6 +41,7 @@ body {
   position: absolute;
   height: 35px;
   width: 100px;
+  min-width: 100px;
   font-weight: 600;
   font-size: 14px;
   color: white;
@@ -72,26 +73,33 @@ body {
 }
 .signIn-Up-Box {
   position: absolute;
-  width: 500px;
+  width: 480px;
   max-width: 90vw;
-  height: 350px;
+  height: 330px;
   padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(4, 18, 41, 0.85);
+  border-radius: 16px;
+}
+.signIn-Up-Box > div {
+  width: 480px;
+  max-width: 90vw;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(4, 18, 41, 0.695);
-  border-radius: 16px;
+}
+.signIn-Up-Box > div > * {
+  width: 90%;
+  height: 100%;
 }
 .glassEffect {
   box-shadow: 0 4px 30px rgba(1, 8, 19, 0.52);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(7px);
+  backdrop-filter: blur(7px);
   border: 1px solid rgba(1, 8, 19, 0.3);
-}
-.signIn-Up-Box > * {
-  width: 90%;
-  height: 100%;
 }
 
 .Headings {
@@ -124,43 +132,28 @@ body {
   text-decoration: underline;
   cursor: pointer;
 }
-/* .userLoginError {
-  position: absolute;
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(4, 21, 48, 0.2);
-  z-index: 11;
-} */
 
 /* -------------------------------------- */
 
-.gamemode-box > div {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-}
 .gamestart-container {
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-.enterGameLink > div {
+.gamestart-container > .link {
+  user-select: none;
   width: 100%;
-}
-
-.createJoin-btn {
-  position: relative;
-}
-.createJoin-btn:hover {
-  top: 2px;
+  height: 100px;
+  text-align: center;
+  word-break: break-all;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 7px;
+  border: 1px solid white;
+  color: lightgray;
+  background: var(--btn-bg);
+  text-shadow: var(--text-shd);
 }
 
 .gamestart-btn {
@@ -189,20 +182,6 @@ body {
 }
 .startgame-btn:hover {
   top: 2px;
-}
-
-.link {
-  user-select: none;
-  width: 90%;
-  height: 70px;
-  text-align: center;
-  word-break: break-all;
-  padding: 10px;
-  border-radius: 7px;
-  border: 1px solid white;
-  color: lightgray;
-  background: var(--btn-bg);
-  text-shadow: var(--text-shd);
 }
 
 /* -------------------------------------------------- */
@@ -258,42 +237,54 @@ body {
 .Gamepad {
   position: relative;
   width: 100%;
-  height: calc(100% - 60px);
+  max-height: calc(100% - 60px);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
 }
-.Gamepad > div {
+.gamepage-body {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  height: calc(100vh - 60px);
+}
+
+.gamepage-body > .gameboard {
+  display: flex;
   width: 270px;
   height: 270px;
 }
 
 .board {
+  width: 270px;
+  height: 270px;
+  border: none;
   z-index: 100;
   display: flex;
   flex-wrap: wrap;
 }
-.box {
-  height: 90px;
+
+.square {
   width: 90px;
-  font-size: 48px;
+  height: 90px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 35px;
   font-weight: 600;
+  cursor: pointer;
+  border: none;
   background-color: transparent;
   box-sizing: border-box;
-  border: none;
-  z-index: 100;
-}
-.box:hover {
-  cursor: pointer;
 }
 
 /* inner shadow ------------------------------- */
-.box:nth-child(2),
-.box:nth-child(3) {
+.square:nth-child(2),
+.square:nth-child(3) {
   background: linear-gradient(
     55deg,
     rgba(128, 128, 128, 0.32) 15%,
@@ -301,8 +292,8 @@ body {
   );
 }
 
-.box:nth-child(4),
-.box:nth-child(7) {
+.square:nth-child(4),
+.square:nth-child(7) {
   background: linear-gradient(
     215deg,
     rgba(128, 128, 128, 0.32) 15%,
@@ -310,10 +301,10 @@ body {
   );
 }
 
-.box:nth-child(5),
-.box:nth-child(6),
-.box:nth-child(8),
-.box:nth-child(9) {
+.square:nth-child(5),
+.square:nth-child(6),
+.square:nth-child(8),
+.square:nth-child(9) {
   background: linear-gradient(
     135deg,
     rgba(128, 128, 128, 0.32) 15%,

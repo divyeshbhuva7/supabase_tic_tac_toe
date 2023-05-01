@@ -45,12 +45,14 @@ export default function SignIn() {
       setEmailErr("");
     }
 
-    if (user.password === "" || user.password.length < 8) {
+    if (user.password === "") {
       setPasswordErr("Please enter password.");
-      return;
+    } else if (user.password.length < 8) {
+      setPasswordErr("Please enter valid password.");
     } else {
       setPasswordErr("");
     }
+
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: user.email,
@@ -59,6 +61,17 @@ export default function SignIn() {
 
       if (error) {
         console.log(error);
+        if (emailRegex === true && user.password.length >= 8) {
+          setShowErr(true);
+        } else {
+          setShowErr(false);
+        }
+
+        if (error.message === "Invalid login credentials") {
+          setErr("Invalid email or password.");
+        } else {
+          setErr(error.message);
+        }
       }
       if (data) {
         // console.log(data);
@@ -70,21 +83,12 @@ export default function SignIn() {
       }
     } catch (err) {
       console.log(err);
-      // if (
-      //   error.message ===
-      //   "Invalid credentials. Please check the email and password."
-      // ) {
-      //   setShowErr(true);
-      //   setErr(error.message);
-      // } else {
-      //   setErr("");
-      // }
     }
   };
 
   useEffect(() => {
     if (userId !== "" && userId !== undefined) {
-      navigate(`/${userId}/gamemode`);
+      navigate(`/joingame`);
     } else {
       return;
     }
@@ -97,74 +101,76 @@ export default function SignIn() {
       </div>
 
       <Paper className="signIn-Up-Box glassEffect">
-        <Text className="Headings signIn-heading" mb="sm">
-          Sign IN
-        </Text>
-
         <div>
-          <TextInput
-            label="Email"
-            title="Email"
-            placeholder="Your email"
-            className="login-input"
-            styles={() => ({
-              label: {
-                color: theme.colors.gray[2],
-              },
-              input: {
-                "&:focus-within": {
-                  borderColor: theme.colors.yellow[8],
-                },
-                backgroundColor: theme.colors.blue[1],
-              },
-            })}
-            required
-            mb="xs"
-            error={emailErr}
-            onFocus={() => setEmailErr("")}
-            onChange={(e) => {
-              setUser({ ...user, email: e.target.value });
-            }}
-          />
+          <Text className="Headings signIn-heading" mb="sm">
+            Sign IN
+          </Text>
 
-          <PasswordInput
-            label="Password"
-            className="login-input"
-            withAsterisk
-            placeholder="Your password"
-            styles={(theme) => ({
-              label: {
-                color: theme.colors.gray[2],
-              },
-              input: {
-                "&:focus-within": {
-                  borderColor: theme.colors.yellow[8],
+          <div>
+            <TextInput
+              label="Email"
+              title="Email"
+              placeholder="Your email"
+              className="login-input"
+              styles={() => ({
+                label: {
+                  color: theme.colors.gray[2],
                 },
-                backgroundColor: theme.colors.blue[1],
-              },
-            })}
-            error={passwordErr}
-            onFocus={() => setPasswordErr("")}
-            visible={visible}
-            onVisibilityChange={toggle}
-            onChange={(e) => {
-              setUser({ ...user, password: e.target.value });
-            }}
-          />
+                input: {
+                  "&:focus-within": {
+                    borderColor: theme.colors.yellow[8],
+                  },
+                  backgroundColor: theme.colors.blue[1],
+                },
+              })}
+              required
+              mb="xs"
+              error={emailErr}
+              onFocus={() => setEmailErr("")}
+              onChange={(e) => {
+                setUser({ ...user, email: e.target.value });
+              }}
+            />
+
+            <PasswordInput
+              label="Password"
+              className="login-input"
+              withAsterisk
+              placeholder="Your password"
+              styles={(theme) => ({
+                label: {
+                  color: theme.colors.gray[2],
+                },
+                input: {
+                  "&:focus-within": {
+                    borderColor: theme.colors.yellow[8],
+                  },
+                  backgroundColor: theme.colors.blue[1],
+                },
+              })}
+              error={passwordErr}
+              onFocus={() => setPasswordErr("")}
+              visible={visible}
+              onVisibilityChange={toggle}
+              onChange={(e) => {
+                setUser({ ...user, password: e.target.value });
+              }}
+            />
+          </div>
+
+          {showErr === true ? <Input.Error mt="xs">{err}</Input.Error> : null}
+
+          <Group position="center" mt="md">
+            <button className="btn signIn-Up-btn" onClick={loginUser}>
+              SIGN IN
+            </button>
+          </Group>
+
+          <Text className="signUp-link">
+            Don't have an account?{" "}
+            <span onClick={() => navigate("/signup")}>Sign Up</span> here
+          </Text>
         </div>
-
-        {showErr === true ? <Input.Error mt="xs">{err}</Input.Error> : null}
-
-        <Group position="center" mt="md">
-          <button className="btn signIn-Up-btn" onClick={loginUser}>
-            SIGN IN
-          </button>
-        </Group>
-
-        <Text className="signUp-link">
-          Don't have an account?{" "}
-          <span onClick={() => navigate("/signup")}>Sign Up</span> here
-        </Text>
       </Paper>
     </div>
   );
