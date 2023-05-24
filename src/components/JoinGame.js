@@ -9,6 +9,8 @@ function JoinGame({ userName }) {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const user = userName;
+
   const [gameID, setGameID] = useState("");
   const [gameLink, setGameLink] = useState("");
 
@@ -31,7 +33,7 @@ function JoinGame({ userName }) {
 
   const StartGame = () => {
     async function createGameData() {
-      if (gameID !== "" && gameID !== undefined && userName) {
+      if (gameID !== "" && gameID !== undefined && user) {
         const { data, error } = await supabase.from("game_data").insert({
           val0: "",
           val1: "",
