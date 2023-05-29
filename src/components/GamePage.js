@@ -255,6 +255,9 @@ export default function GamePage({ userName }) {
     if (error) {
       console.log(error);
     }
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    localStorage.removeItem("expiry");
 
     navigate("/");
   };

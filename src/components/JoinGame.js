@@ -5,12 +5,11 @@ import tictactoelogo from "../tictactoelogo.png";
 import { Image, Paper, Text } from "@mantine/core";
 import supabase from "../supabaseConfig";
 
-function JoinGame({ userName }) {
+function JoinGame() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const user = userName;
-
+  const user = localStorage.getItem("username");
   const [gameID, setGameID] = useState("");
   const [gameLink, setGameLink] = useState("");
 
@@ -47,7 +46,7 @@ function JoinGame({ userName }) {
           winner: null,
           gameid: gameID,
           current_player: "O",
-          player1: userName,
+          player1: user,
         });
 
         if (data) {

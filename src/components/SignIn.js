@@ -73,10 +73,19 @@ export default function SignIn() {
           setErr(error.message);
         }
       }
+
       if (data) {
-        // console.log(data);
         if (data.session.access_token) {
+          let getUserName = data.user.email.split("@");
+          let userName = getUserName[0];
+
           setUserId(data.user.id.slice(0, 8));
+          localStorage.setItem(
+            "token",
+            JSON.stringify(data.session.access_token)
+          );
+          localStorage.setItem("username", userName);
+          localStorage.setItem("expiry", data.session.expires_at);
         } else {
           return;
         }

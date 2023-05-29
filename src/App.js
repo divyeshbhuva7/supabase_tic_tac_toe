@@ -18,43 +18,14 @@ function App() {
   const gameID = useRef();
   const userId = useRef();
 
-  const [tokenExpireTime, setTokenExpireTime] = useState(0);
-  const [userName, setUserName] = useState(0);
-
-  const Time = window.Date.now().toString();
-  const currTime = Time.slice(0, 10);
-
-  useEffect(() => {
-    const signInCheck = JSON.parse(
-      localStorage.getItem("sb-albmlgxrtsvwoaalwxpv-auth-token")
-    );
-    if (signInCheck !== null) {
-      setTokenExpireTime(signInCheck.expires_at);
-      const usrName = signInCheck.user.email.split("@");
-      setUserName(usrName[0]);
-    }
-  }, [window.location]);
-
   return (
     <Router>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <Home
-              currTime={currTime}
-              tokenExpireTime={tokenExpireTime}
-              userName={userName}
-            />
-          }
-        />
+        <Route path="/" element={<Home />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/joingame" element={<JoinGame userName={userName} />} />
-        <Route
-          path="/game/:gameID"
-          element={<GamePage userName={userName} />}
-        />
+        <Route path="/joingame" element={<JoinGame />} />
+        <Route path="/game/:gameID" element={<GamePage />} />
       </Routes>
     </Router>
   );
